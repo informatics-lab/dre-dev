@@ -166,7 +166,7 @@ def write_log(session_id, user_id, log):
     table = get_table("dre-decision-logs")
     table.put_item(Item={"session_id": session_id,
                          "user_id": user_id,
-                         "log": json.dumps(log)})
+                         "log": log})
 
 
 def get_log(session_id):
