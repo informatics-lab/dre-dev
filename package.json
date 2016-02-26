@@ -1,0 +1,20 @@
+{
+  "name": "conversation-skill",
+  "version": "0.0.1",
+  "description": "Gather information to run skills automatically",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/met-office-lab/conversation-skill.git"
+  },
+  "author": "Niall Robinson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/met-office-lab/conversation-skill/issues"
+  },
+  "homepage": "https://github.com/met-office-lab/conversation-skill#readme",
+  "devDependencies": {
+  }
+}
