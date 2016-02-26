@@ -172,7 +172,7 @@ def write_log(session_id, user_id, log):
 def get_log(session_id):
     table = get_table("dre-decision-logs")
 
-    return json.loads(table.get_item(Key={"session_id": session_id})["Item"]["log"])
+    return table.get_item(Key={"session_id": session_id})["Item"]["log"]
 
 
 def remove_log(session_id):

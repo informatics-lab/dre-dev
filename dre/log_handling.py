@@ -24,10 +24,7 @@ def reduce_logs(logs):
             if all(item in log.items() for item in condition.items()):
                 these_forecasts.append(log["forecast"])
         reduced_log = condition
-        reduced_log["mean_forecast"] = sum(these_forecasts)/len(these_forecasts)
-        reduced_log["min_forecast"] = min(these_forecasts)
-        reduced_log["max_forecast"] = max(these_forecasts)
-        reduced_log["n_forecasts"] = len(these_forecasts)
+        reduced_log["forecasts"] = these_forecasts
 
         reduced_logs.append(reduced_log)
 
