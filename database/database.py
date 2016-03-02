@@ -17,8 +17,12 @@ sys.path.append("../")
 import dre.actions
 
 
-class Condition(object):
-    """ Defines an desired meteorological condition """
+class Condition(dict):
+    """
+    Defines an desired meteorological condition
+    Inherits from dict to make it JSON serializible
+
+    """
     def __init__(self, variable, ideal, min, max):
         """
         Args:

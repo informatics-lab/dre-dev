@@ -85,12 +85,12 @@ class GaussDistFromIdeal(Action):
             this_max = condition.max if forecast_condition > condition.ideal else condition.ideal
             guassian_distance = to_gaussian_space(normalized_linear_score(forecast_condition, this_min, this_max))
 
-            logs.append({"variable": condition.variable, 
-                         "min": condition.min,
-                         "max": condition.max,
-                         "ideal": condition.ideal,
-                         "forecast": forecast_condition,
-                         "metric": "GaussDistFromIdeal"})
+            logs.append({"condition": condition,
+                        "forecast": {"forecast_value": forecast_condition,
+                                     "time": self.time.isoformat(),
+                                     "location": {"lat": self.loc.lat, "lon": self.loc.lon},
+                                     "metric": "GaussDistFromIdeal"}
+                        })
 
             scores.append(guassian_distance)
 
