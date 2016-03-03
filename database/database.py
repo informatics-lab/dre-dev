@@ -6,7 +6,6 @@ and convert to fully featured Python objects....
 
 from copy import deepcopy
 from datetime import datetime
-import decimal
 import isodate  
 import json
 import boto3
@@ -41,35 +40,40 @@ class Condition(object):
         self.max = max
 
 
-def replace_decimals(obj):
+def decode_floats(obj):
     if isinstance(obj, list):
         for i in xrange(len(obj)):
-            obj[i] = replace_decimals(obj[i])
+            obj[i] = decode_floats(obj[i])
         return obj
     elif isinstance(obj, dict):
         for k in obj.iterkeys():
-            obj[k] = replace_decimals(obj[k])
+            obj[k] = decode_floats(obj[k])
         return obj
-    elif isinstance(obj, decimal.Decimal):
-        if obj % 1 == 0:
+    elif isinstance(obj, str) or isinstance(obj, unicode):
+        try:
             return int(obj)
-        else:
+        except ValueError:
+            pass
+        try:
             return float(obj)
+        except ValueError:
+            pass
+        return obj
     else:
         return obj
 
 
-def replace_floats(obj):
+def encode_floats(obj):
     if isinstance(obj, list):
         for i in xrange(len(obj)):
-            obj[i] = replace_floats(obj[i])
+            obj[i] = encode_floats(obj[i])
         return obj
     elif isinstance(obj, dict):
         for k in obj.iterkeys():
-            obj[k] = replace_floats(obj[k])
+            obj[k] = encode_floats(obj[k])
         return obj
-    elif isinstance(obj, float):
-        return decimal.Decimal(obj)
+    elif isinstance(obj, float) or isinstance(obj, int):
+        return str(obj)
     else:
         return obj
 
@@ -161,7 +165,7 @@ def get_default_values_conf(uid):
     """
     table = get_table("dre-default-values")
     json = table.get_item(Key={"_id": uid})["Item"]
-    json = replace_decimals(json)
+    json = decode_floats(json)
 
     return split_default_values_conf(parse_activities_config(json)["activities"])
 
@@ -182,7 +186,7 @@ def get_speech_conf(uid="default"):
 
 
 def write_log(session_id, user_id, log):
-    decimalised_log = replace_floats(log)
+    decimalised_log = encode_floats(log)
     table = get_table("dre-decision-logs")
     table.put_item(Item={"session_id": session_id,
                          "user_id": user_id,
@@ -193,7 +197,7 @@ def get_log(session_id):
     table = get_table("dre-decision-logs")
     log = table.get_item(Key={"session_id": session_id})["Item"]["log"]
 
-    return replace_decimals(log)
+    return decode_floats(log)
 
 
 def remove_log(session_id):
@@ -221,7 +225,7 @@ def get_default_time_slot_values_conf(uid="default"):
     """
     table = get_table("dre-default-timeslot-values")
     json = table.get_item(Key={"_id": uid})["Item"]
-    json = replace_decimals(json)
+    json = decode_floats(json)
 
     return split_time_values_conf(parse_time_slot_config(json)['timeSlot'])
 

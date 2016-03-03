@@ -15,9 +15,9 @@ from database import *
 
 def upsert_configs(file_path, table_name):
     with open(file_path, "r") as f:
-        conf = replace_floats(json.loads(f.read()))
+        conf = encode_floats(json.loads(f.read()))
     print "Upserting", file_name
-    get_table(table_name)
+    table = get_table(table_name)
     table.put_item(Item=conf)
 
 
