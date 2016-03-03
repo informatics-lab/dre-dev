@@ -17,7 +17,7 @@ sys.path.append("../")
 import dre.actions
 
 
-class Condition(dict):
+class Condition(object):
     """
     Defines an desired meteorological condition
     Inherits from dict to make it JSON serializible
@@ -55,6 +55,21 @@ def replace_decimals(obj):
             return int(obj)
         else:
             return float(obj)
+    else:
+        return obj
+
+
+def replace_floats(obj):
+    if isinstance(obj, list):
+        for i in xrange(len(obj)):
+            obj[i] = replace_floats(obj[i])
+        return obj
+    elif isinstance(obj, dict):
+        for k in obj.iterkeys():
+            obj[k] = replace_floats(obj[k])
+        return obj
+    elif isinstance(obj, float):
+        return decimal.Decimal(obj)
     else:
         return obj
 
@@ -167,16 +182,18 @@ def get_speech_conf(uid="default"):
 
 
 def write_log(session_id, user_id, log):
+    decimalised_log = replace_floats(log)
     table = get_table("dre-decision-logs")
     table.put_item(Item={"session_id": session_id,
                          "user_id": user_id,
-                         "log": log})
+                         "log": decimalised_log})
 
 
 def get_log(session_id):
     table = get_table("dre-decision-logs")
+    log = table.get_item(Key={"session_id": session_id})["Item"]["log"]
 
-    return table.get_item(Key={"session_id": session_id})["Item"]["log"]
+    return replace_decimals(log)
 
 
 def remove_log(session_id):
@@ -202,17 +219,9 @@ def get_default_time_slot_values_conf(uid="default"):
     Args:
         * uid (string): unique ID for this user
     """
-    try:
-        dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
-        table = dynamodb.Table("dre-default-timeslot-values")
-        json = table.get_item(Key={"_id": uid})["Item"]
-        json = replace_decimals(json)
-    except: # if no permissions then try and use envs (i.e. travis)
-        conn = boto.dynamodb2.connect_to_region("us-east-1",
-                    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-                    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"))
-        table = Table("dre-default-values", connection=conn)
-        json, = table.get_item(_id=uid).values()
+    table = get_table("dre-default-timeslot-values")
+    json = table.get_item(Key={"_id": uid})["Item"]
+    json = replace_decimals(json)
 
     return split_time_values_conf(parse_time_slot_config(json)['timeSlot'])
 

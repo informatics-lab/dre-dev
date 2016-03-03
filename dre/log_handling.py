@@ -13,7 +13,7 @@ def reduce_logs(logs):
 
     # get a list of unique dictionaries (not including the forecast value)
     conditions = [log["condition"] for log in logs]
-    unique_conditions = {json.dumps(log): log for log in logs}.values()
+    unique_conditions = {json.dumps(condition): condition for condition in conditions}.values()
     
     possibilities = []
     for condition in unique_conditions:
@@ -24,6 +24,5 @@ def reduce_logs(logs):
         reduced_log = {"condition": condition, "forecasts": these_forecasts}
 
         possibilities.append(reduced_log)
-    # import pdb; pdb.set_trace()
 
     return possibilities

@@ -56,7 +56,6 @@ class WhatDecisionTest(unittest.TestCase):
     cache.cache_forecast(timesteps, loc)
 
     def testWhatDecisionManual(self):
-      import pdb;pdb.set_trace()
       mySunbathe = Activity([actions.GaussDistFromIdeal(self.timesteps[0].date, self.loc, run["conditions"], self.cache)])
       myRun = Activity([actions.GaussDistFromIdeal(self.timesteps[0].date, self.loc, run["conditions"], self.cache)])
 
