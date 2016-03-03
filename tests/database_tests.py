@@ -33,6 +33,10 @@ class TestDatabase(unittest.TestCase):
 
         database.remove_log(session_id)
 
+    def test_encoding(self):
+        test = ['asdf', {'a': 111.1, 'b': 1}]
+        self.assertEquals(test, database.decode_floats(database.encode_floats(test)))
+
 
 if __name__ == '__main__':
     unittest.main()

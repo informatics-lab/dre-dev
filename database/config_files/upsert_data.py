@@ -8,13 +8,16 @@ import json
 import boto3
 import os
 
+import sys
+sys.path.append("..")
+from database import *
+
 
 def upsert_configs(file_path, table_name):
     with open(file_path, "r") as f:
-        conf = json.loads(f.read())
+        conf = encode_floats(json.loads(f.read()))
     print "Upserting", file_name
-    dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
-    table = dynamodb.Table(table_name)
+    table = get_table(table_name)
     table.put_item(Item=conf)
 
 
