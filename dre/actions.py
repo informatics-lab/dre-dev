@@ -54,22 +54,14 @@ class GaussDistFromIdeal(Action):
                 action_forecast = self.cache.get_forecast(self.time, self.loc, condition.variable)
             return action_forecast
 
-        def normalized_linear_score(val, minlim, maxlim):
-            """
-            Converts to fractional distance between limits
-
-            Args:
-                * val (float): value to convert
-                * minlim (float): minmum value in range
-                * maxlim (float): maxmum value in range
-
-            """
-            if val == minlim == maxlim:
-                dist = 1.0
-            elif not minlim < val < maxlim:
-                dist = 0.0
+        def function normalized_linear_score(val, minval, maxval, idealval):
+            dist = None
+            if (val > minval) and (val <= idealval):
+                dist = (val-minval)/(idealval-minval)
+            elif (val>ideal) and (val<max):
+                dist = (max-val)/(max-ideal)
             else:
-                dist = (val-minlim) / max((maxlim-minlim), 1e-8)
+                dist = 0.0
             return dist
 
         # magic numbers scale Guassian to unit amp and unit practial max/min,
